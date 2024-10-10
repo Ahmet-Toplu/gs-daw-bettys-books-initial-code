@@ -15,7 +15,7 @@ router.post("/registered", function (req, res, next) {
   bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
     // Store hash in your password DB.
     let sqlquery =
-      "INSERT INTO users (username, first_name, last_name, password) VALUES (?,?,?)";
+      "INSERT INTO users (username, first_name, last_name, email, password) VALUES (?,?,?,?,?)";
     let newrecord = [
       req.body.first,
       req.body.last,
@@ -35,14 +35,13 @@ router.post("/registered", function (req, res, next) {
           " you are now registered!  We will send an email to you at " +
           req.body.email;
         result +=
-          "Your password is: " +
+          " Your password is: " +
           req.body.password +
           " and your hashed password is: " +
           hashedPassword;
         res.send(result);
       }
     });
-    console.log(hash);
   });
 });
 
