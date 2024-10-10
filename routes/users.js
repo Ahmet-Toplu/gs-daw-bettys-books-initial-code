@@ -1,7 +1,6 @@
 // Create a new router
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const plainPassword = req.body.password;
 
 const express = require("express");
 const router = express.Router();
@@ -12,6 +11,7 @@ router.get("/register", function (req, res, next) {
 
 router.post("/registered", function (req, res, next) {
   // saving data in database
+  const plainPassword = req.body.password;
   bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
     // Store hash in your password DB.
     let sqlquery =
