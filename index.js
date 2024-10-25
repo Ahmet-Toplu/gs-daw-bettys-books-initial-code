@@ -6,6 +6,8 @@ var ejs = require("ejs");
 var mysql = require("mysql2");
 
 var session = require("express-session");
+var validator = require("express-validator");
+var expressSanitizer = require("express-sanitizer");
 
 // Create the express application object
 const app = express();
@@ -19,6 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Set up public folder (for css and statis js)
 app.use(express.static(__dirname + "/public"));
+
+app.use(expressSanitizer());
 
 // Create a session
 app.use(
