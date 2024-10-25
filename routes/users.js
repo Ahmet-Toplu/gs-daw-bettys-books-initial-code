@@ -5,6 +5,14 @@ const saltRounds = 10;
 const express = require("express");
 const router = express.Router();
 
+const redirectLogin = (req, res, next) => {
+  if (!req.session.userId) {
+    res.redirect("./login"); // redirect to the login page
+  } else {
+    next(); // move to the next middleware function
+  }
+};
+
 router.get("/register", function (req, res, next) {
   res.render("register.ejs");
 });
@@ -38,14 +46,14 @@ router.post("/registered", function (req, res, next) {
           " Your password is: " +
           req.body.password +
           " and your hashed password is: " +
-          hashedPassword;
+          hashedPassword + " <a href="+"/"+">Home</a>";
         res.send(result);
       }
     });
   });
 });
 
-router.get("/listusers", function (req, res, next) {
+router.get("/list", redirectLogin, function (req, res, next) {
   // everything from users table except for password
   let sqlquery = "SELECT username, first_name, last_name, email FROM users";
   // execute sql query
@@ -62,8 +70,8 @@ router.get("/login", function (req, res, next) {
 });
 
 router.post("/loggedin", function (req, res, next) {
-  let sqlquery = "SELECT username, password FROM users";
-  let record = [req.body.username, req.body.password];
+  let sqlquery = "SELECT username, password FROM users where username = ?";
+  let record = [req.body.username];
   db.query(sqlquery, record, (err, result) => {
     if (err) {
       next(err);
@@ -75,7 +83,9 @@ router.post("/loggedin", function (req, res, next) {
           if (err) {
             next(err);
           } else if (result == true) {
-            res.send("You are now logged in as " + req.body.username);
+            // Save user session here, when login is successful
+            req.session.userId = req.body.username;
+            res.send("You are now logged in as " + req.body.username + " <a href="+"/"+">Home</a>");
           } else {
             res.send("Invalid password");
           }
